@@ -55,7 +55,8 @@ class EstimDiffPipeline(DiffusionPipeline):
         image= None, 
         threshold = 0.002,
         skip_num = 10,
-        uniform = True
+        uniform = True,
+        final = 3
     ) -> Union[ImagePipelineOutput, Tuple]:
         r"""
         Args:
@@ -154,7 +155,7 @@ class EstimDiffPipeline(DiffusionPipeline):
                     else:
                         increase = False
                     for cou in range(int(skip_num)):
-                        if (t < 3):
+                        if (t < final):
                             continue
                         model_output = 2*out[1] - out[0]
                         out[0] = out[1]

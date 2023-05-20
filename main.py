@@ -93,11 +93,11 @@ def main():
             im = ddim(num_inference_steps= 1000 , case_num= 47 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
             im['images'][0].save(os.path.join(str(path), "Sample_" + str(i) + ".png"))
     elif args.Mode == 'Test':
-        original_path = Path(str(path) + '\DDIM(1000)')
+        original_path = Path(os.join(str(path) , 'DDIM(1000)'))
         original_path.mkdir(exist_ok= True)
-        DDIM_path = Path(str(path) + '\DDIM('+str(step_num) + ')')
+        DDIM_path = Path(os.path(str(path) , '\DDIM('+str(step_num) + ')'))
         DDIM_path.mkdir(exist_ok= True)
-        Proposed_path = Path(str(path) + '\Proposed('+str(step_num) + ')')
+        Proposed_path = Path(os.path.join(str(path) + '\Proposed('+str(step_num) + ')'))
         Proposed_path.mkdir(exist_ok= True)
         for i in range (im_num):
             image = torch.randn((1, 3 , 256 , 256) , device= device)
@@ -108,7 +108,7 @@ def main():
             im = ddim(num_inference_steps= step_num , case_num= 0 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
             im['images'][0].save(os.path.join(str(DDIM_path), "Sample_" + str(i) + ".png"))
     else:
-        print('Argument should only be Test or Noraml')
+        raise TypeError('Argument should only be Test or Noraml')
 
 
         

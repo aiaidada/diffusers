@@ -11,6 +11,7 @@ import cv2
 from pathlib import Path
 from pytorch_fid import fid_score
 import yaml
+import time
 
 
 from src.diffusers.pipelines import EstimDiffPipeline , DDIMPipeline
@@ -23,7 +24,7 @@ def PSNR(original, compressed):
     if(mse == 0):
         return 100
     max_pixel = 255.0
-    psnr = 20 * math.log10(max_pixel / sqrt(mse))
+    psnr = 20 * math.log10(max_pixel / math.sqrt(mse))
     return psnr
 
 def parse_args_and_config():
@@ -111,28 +112,50 @@ def main():
         Proposed_path.mkdir(exist_ok= True)
         proposed_PSNR = 0
         ddim_PSNR = 0
+        original_time = 0
+        ddim_time = 0 
+        proposed_time = 0
         for i in range (im_num):
             image = torch.randn((1, 3 , 256 , 256) , device= device)
-            im = ddim(num_inference_steps= 1000 , case_num= 47 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
+            a = time.time()
+            im = ddim(num_inference_steps= 1000 , case_num= 47 ,image= image ,
+                      threshold= args.Skip_threshold , skip_num= skip_num ,uniform= uniform , final= final)
+            b = time.time()
+            proposed_time = proposed_time + (b-a)
             im['images'][0].save(os.path.join(str(Proposed_path), "Sample0_" + str(i) + ".png"))
-            im = ddim(num_inference_steps= 1000 , case_num= 0 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
+            a = time.time()
+            im = ddim(num_inference_steps= 1000 , case_num= 0 , image= image ,
+                      threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform ,final= final)
+            b = time.time()
+            original_time = original_time + (b -a)
             im['images'][0].save(os.path.join(str(original_path), "Sample_" + str(i) + ".png"))
-            im = ddim(num_inference_steps= step_num , case_num= 0 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
+            a = time.time()
+            im = ddim(num_inference_steps= step_num , case_num= 0 , image= image ,
+                      threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
+            b = time.time()
+            ddim_time = ddim_time + (b-a)
             im['images'][0].save(os.path.join(str(DDIM_path), "Sample_" + str(i) + ".png"))
             original = cv2.imread(os.path.join(str(original_path), "Sample_" + str(i) + ".png"))
             compressed = cv2.imread(os.path.join(str(DDIM_path), "Sample_" + str(i) + ".png"), 1)
             ddim_PSNR += PSNR(original, compressed)
-            compressed = cv2.imread(os.path.join(str(Proposed_path), "Sample_" + str(i) + ".png"), 1)
+            compressed = cv2.imread(os.path.join(str(Proposed_path), "Sample0_" + str(i) + ".png"), 1)
             proposed_PSNR += PSNR(original , compressed)         
         proposed_PSNR /= im_num
         ddim_PSNR /= im_num
         proposed_FID =  fid_score.calculate_fid_given_paths([str(original_path) , str(Proposed_path)] , device= device , batch_size= 1 , dims= 2048)
         previous_FID =  fid_score.calculate_fid_given_paths([str(original_path) , str(DDIM_path)] , device= device , batch_size= 1  , dims= 2048)
-        data  ={ 'DDIM_PSNR': ddim_PSNR ,
-                'DDIM_FID' : previous_FID,
+        data  ={ 'Number of Generated Photos': im_num, 
+                'DDIM_PSNR': ddim_PSNR ,
+                'DDIM_FID' : str(previous_FID),
+                'DDIM_time' : str(ddim_time),
                 'EstimDiff_PSNR' : proposed_PSNR,
-                'EstimDiff_FID' : proposed_FID
+                'EstimDiff_FID' : str(proposed_FID),
+                'EstimDiff_time' : str(proposed_time),
+                'Original_time' : str(original_time)
+                
         }
+        print(proposed_FID , '  ' , previous_FID)
+        print(data)
         with open('output.yaml', 'w') as file:
             yaml.dump(data, file)
     else:

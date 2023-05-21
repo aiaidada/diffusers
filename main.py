@@ -23,7 +23,7 @@ def PSNR(original, compressed):
     if(mse == 0):
         return 100
     max_pixel = 255.0
-    psnr = 20 * log10(max_pixel / sqrt(mse))
+    psnr = 20 * math.log10(max_pixel / sqrt(mse))
     return psnr
 
 def parse_args_and_config():
@@ -105,9 +105,9 @@ def main():
     elif args.Mode == 'Test':
         original_path = Path(os.path.join(str(path) , 'DDIM(1000)'))
         original_path.mkdir(exist_ok= True)
-        DDIM_path = Path(os.path.join(str(path) , '\DDIM('+str(step_num) + ')'))
+        DDIM_path = Path(os.path.join(str(path) , 'DDIM('+str(step_num) + ')'))
         DDIM_path.mkdir(exist_ok= True)
-        Proposed_path = Path(os.path.join(str(path) ,'\Proposed('+str(step_num) + ')'))
+        Proposed_path = Path(os.path.join(str(path) ,'Proposed('+str(step_num) + ')'))
         Proposed_path.mkdir(exist_ok= True)
         proposed_PSNR = 0
         ddim_PSNR = 0

@@ -53,11 +53,6 @@ pip install --upgrade diffusers[flax]
 
 Please refer to the [How to use Stable Diffusion in Apple Silicon](https://huggingface.co/docs/diffusers/optimization/mps) guide.
 
-## My Contribution(EstimDiff)
-For Using EstimDiff for Generating Church pictures, all you have to do is using the main file in here, and run the following on terminal in this folder:
-
-```bash
-python3 main.py --skipping Uniform --Step_num 500 --Generation_num 1 --Skip_threshold 0.002 --Device cpu
 ```
 ## Quickstart
 

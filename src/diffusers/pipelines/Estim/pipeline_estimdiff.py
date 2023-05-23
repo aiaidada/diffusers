@@ -100,78 +100,64 @@ class EstimDiffPipeline(DiffusionPipeline):
 
         # set step values
         self.scheduler.set_timesteps(num_inference_steps)
+        if image == None:
+            image = torch.randn(image_shape , generator=generator, device=self.device, dtype=self.unet.dtype)
         out = []
-        l = []
-        first_step = True
-        Second_step = True
-        
-        print('Experimenting for case #' + str(case_num))
-        if (case_num < 45):
-            for t in self.progress_bar(self.scheduler.timesteps):
-                ##################################################################
-                ###########                  CASE 0                 ##############
-                ##################################################################
-                if case_num == 0:
-                    model_output = self.unet(image, t).sample                                                    
+        t= 999
+        Step_num = 0
+        while (t >= 0):
+            if (t < 3):
+                model_output = self.unet(image , t).sample
                 image = self.scheduler.step(
                     model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
-            ).prev_sample    
-
-        elif (case_num == 47):
-            t= 999
-            used = 0
-            while (t >= 0):
-                if (t < 3):
-                    model_output = self.unet(image , t).sample
-                    image = self.scheduler.step(
-                        model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
-                        ).prev_sample  
-                    t = t -1 
-                    #used += 1
+                    ).prev_sample  
+                t = t -1 
+                Step_num += 1
+            else:
+                model_output = self.unet(image , t).sample
+                if (len(out) > 1):
+                    temp = torch.count_nonzero((((((model_output) > 0 )*((2*out[0] - out[1])<0))) + 
+                                                (((model_output) < 0 )*((2 * out[0] - out[1]) >0))))/(torch.prod(
+                                                    torch.tensor(image_shape)))
                 else:
-                    model_output = self.unet(image , t).sample
-                    if (len(out) > 1):
-                        temp = torch.count_nonzero((((((model_output) > 0 )*((2*out[0] - out[1])<0))) + (((model_output) < 0 )*((2 * out[0] - out[1]) >0))))/(3*256*256)
-                    else:
-                        temp = 0 
-                    if (len(out) < 2):
-                        out.append(model_output)
-                    out[0] = model_output
+                    temp = 0 
+                if (len(out) < 2):
+                    out.append(model_output)
+                out[0] = model_output
+                image = self.scheduler.step(
+                    model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
+                    ).prev_sample  
+                t = t -1 
+                model_output = self.unet(image , t).sample
+                if (len(out) < 2):
+                    out.append(model_output)
+                out[1] =  model_output
+                image = self.scheduler.step(
+                    model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
+                    ).prev_sample 
+                Step_num += 2
+                t = t -1 
+                if (temp < threshold):
+                    increase = True
+                else:
+                    increase = False
+                for count in range(int(skip_num)):
+                    if (t < final):
+                        continue
+                    model_output = 2*out[1] - out[0]
+                    out[0] = out[1]
+                    out[1] = model_output
                     image = self.scheduler.step(
-                        model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
-                        ).prev_sample  
-                    t = t -1 
-                    model_output = self.unet(image , t).sample
-                    if (len(out) < 2):
-                        out.append(model_output)
-                    out[1] =  model_output
-                    image = self.scheduler.step(
-                        model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
-                        ).prev_sample 
-                    #used += 2
-                    t = t -1 
-                    if (temp < threshold):
-                        increase = True
-                    else:
-                        increase = False
-                    for cou in range(int(skip_num)):
-                        if (t < final):
-                            continue
-                        model_output = 2*out[1] - out[0]
-                        out[0] = out[1]
-                        out[1] = model_output
-                        image = self.scheduler.step(
-                        model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
-                        ).prev_sample  
-                        t  = t -1
-                    if (increase and not(uniform)):
-                        skip_num = skip_num + 5
-                        
-                    elif (skip_num > 8 and not(uniform)):
-                        skip_num = skip_num - 2
+                    model_output, t, image, eta=eta, use_clipped_model_output=use_clipped_model_output, generator=generator
+                    ).prev_sample  
+                    t  = t -1
+                if (increase and not(uniform)):
+                    skip_num = skip_num + 5
+                    
+                elif (skip_num > 8 and not(uniform)):
+                    skip_num = skip_num - 2
                         
         
-
         image = (image / 2 + 0.5).clamp(0, 1)
         image = image.cpu().permute(0, 2, 3, 1).numpy()
         if output_type == "pil":

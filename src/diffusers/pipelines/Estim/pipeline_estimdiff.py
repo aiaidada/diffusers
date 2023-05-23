@@ -51,7 +51,6 @@ class EstimDiffPipeline(DiffusionPipeline):
         use_clipped_model_output: Optional[bool] = None,
         output_type: Optional[str] = "pil",
         return_dict: bool = True,
-        case_num = 0,
         image= None, 
         threshold = 0.002,
         skip_num = 10,

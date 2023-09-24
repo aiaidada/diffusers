@@ -22,7 +22,7 @@ from ..pipeline_utils import DiffusionPipeline, ImagePipelineOutput
 
 
 class EstimDiffPipeline(DiffusionPipeline):
-    r"""
+    """
     This model inherits from [`DiffusionPipeline`]. Check the superclass documentation for the generic methods the
     library implements for all the pipelines (such as downloading or saving, running on a particular device, etc.)
 

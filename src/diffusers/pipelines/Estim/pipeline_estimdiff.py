@@ -16,7 +16,7 @@ from typing import List, Optional, Tuple, Union
 
 import torch
 
-from ...schedulers import DDIMScheduler
+from ...schedulers import *
 from ...utils import randn_tensor
 from ..pipeline_utils import DiffusionPipeline, ImagePipelineOutput
 
@@ -33,13 +33,15 @@ class EstimDiffPipeline(DiffusionPipeline):
             [`DDPMScheduler`], or [`DDIMScheduler`].
     """
 
-    def __init__(self, unet, scheduler):
+    def __init__(self, unet, scheduler , scheduler_choice= 'DDIMScheduler'):
         super().__init__()
 
         # make sure scheduler can always be converted to DDIM
-        scheduler = DDIMScheduler.from_config(scheduler.config)
+        scheduler_class = eval(scheduler_choice)
+        scheduler = scheduler_class.from_config(scheduler.config)
 
         self.register_modules(unet=unet, scheduler=scheduler)
+
     
     @torch.no_grad()
     def __call__(

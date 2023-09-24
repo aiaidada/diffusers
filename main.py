@@ -90,18 +90,10 @@ def main():
     else:
         path = Path('Samples')
     path.mkdir(exist_ok=True)
-    if args.skipping == 'Uniform':
-        speed_up = 1000/step_num
-        skip_num = math.ceil(2 * speed_up) - 2
-        final = step_num - math.floor(2*1000/(skip_num+2))
-        uniform = True
-    else:
-        uniform = False
-        skip_num = 5
     if args.Mode == 'Normal':
         for i in range (im_num):
             image = torch.randn((1, 3 , 256 , 256) , device= device)
-            im = ddim(num_inference_steps= 1000 , case_num= 47 , image= image , threshold= args.Skip_threshold , skip_num= skip_num , uniform= uniform , final= final)
+            im = ddim(num_inference_steps= 50  , threshold= args.Skip_threshold , uniform= True )
             im['images'][0].save(os.path.join(str(path), "Sample_" + str(i) + ".png"))
     elif args.Mode == 'Test':
         original_path = Path(os.path.join(str(path) , 'DDIM(1000)'))

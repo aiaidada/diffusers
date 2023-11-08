@@ -30,12 +30,12 @@ pip install diffusers transformers accelerate scipy safetensors
 
 ## Modes
 
-This pipeline has two mode for skipping the steps in diffusion models, the first one is the standard uniform skipping in which you can state the number of steps that you are willing to take. The second one on the other hand, decides the best number of steps, on the fly, based on different factors, and it can reduce the number of steps to as low as 40.
+This pipeline has two modes for skipping the steps in diffusion models, the first one is the standard uniform skipping in which you can state the number of steps that you are willing to take. The second one, on the other hand, decides the best number of steps, on the fly, based on different factors, and it can reduce the number of steps to as low as 40.
 
 
 ## Generating Images
 
-This is same as any other pipeline, the only thing is that you can use Estim now. 
+This is the same as any other pipeline, the only thing is that you can use Estim now. 
 
 
 ```python
@@ -47,9 +47,10 @@ pipe = EstimDiffPipeline.from_pretrained("google/ddpm-cat-256").to("cuda")
 im = pipe(num_inference_steps= 50  , threshold= args.Skip_threshold , uniform= True )
 ```
 
+If you want to test it for different cases, you can also use the mai.py file presented here.
 ## Credits
 
-This is the HuggingFace libarary and I just added the EstimDiff Pipline to it.
+This is the HuggingFace library and I just added the EstimDiff Pipeline to it.
 
 ## Citation
 

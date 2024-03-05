@@ -15,7 +15,15 @@
     </a>
 </p>
 
-This is HuggingFace diffusers plus a new pipeline called Estim. This new very AWSOME pipeline, will generate photos very similar to thoes generated with 1000 steps. The trick is that without any training it decieds when to take the steps.
+This is HuggingFace diffusers plus a new pipeline called Estim. This new pipeline will generate images very similar to those generated with 1000 steps, by estimating the steps that it won't take instead of just skipping them.
+![Image 1](estim50.jpg)
+*Image generated with Estim using around 50 steps*
+
+![Image 2](ddim100.jpg)
+*Image generated with DDIM using 1000 steps *
+
+![Image 3](ddim50.jpg)
+*Image generated with DDIM using 50 steps*
 
 
 ## Prepration

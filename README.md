@@ -19,7 +19,7 @@ This is HuggingFace diffusers plus a new pipeline called Estim. This new pipelin
 ![Image 1](estim50.png)
 *Image generated with Estim using around 50 steps*
 
-![Image 2](ddim100.png)
+![Image 2](ddim1000.png)
 *Image generated with DDIM using 1000 steps *
 
 ![Image 3](ddim50.png)

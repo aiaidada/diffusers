@@ -16,13 +16,13 @@
 </p>
 
 This is HuggingFace diffusers plus a new pipeline called Estim. This new pipeline will generate images very similar to those generated with 1000 steps, by estimating the steps that it won't take instead of just skipping them.
-![Image 1](estim50.jpg)
+![Image 1](estim50.png)
 *Image generated with Estim using around 50 steps*
 
-![Image 2](ddim100.jpg)
+![Image 2](ddim100.png)
 *Image generated with DDIM using 1000 steps *
 
-![Image 3](ddim50.jpg)
+![Image 3](ddim50.png)
 *Image generated with DDIM using 50 steps*
 
 
